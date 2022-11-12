@@ -1,71 +1,78 @@
-
 //Recupération de l'id avec les paramètres de l'url
-const produitId = (new URL(document.location)).searchParams.get("id");
-console.log({produitId});
-
+const produitId = new URL(document.location).searchParams.get('id');
 
 // fonction pour récuperer les données de l'api avec l'id du produit
- fetch(`http://localhost:3000/api/products/${produitId}`) // on va chercher l'API avec la methode fetch et on ajoute notre variable qui contient l'id
-    .then((response) => response.json())
-    .then((res) => productDisplay(res)) 
-    
+let product;
+const fetchProducts = async () => {
+  await fetch(`http://localhost:3000/api/products/${produitId}`)
+    .then((res) => res.json().then((json) => (product = json)))
+
+    .catch((error) => console.error(error));
+};
+fetchProducts(); //On appelle la fonction pour recupérer les données de l'API
+
+// Recuperation des selecteurs css et id
+let parent = document.querySelector('.item__img'); // on récupére le selecteur css pour pouvoir mettre l'image plus tard
+let title = document.getElementById('title'); // on récupéré l'id title du document HTML
+let price = document.getElementById('price'); // on récupére l'id price du document HTML
+let description = document.getElementById('description'); // on récupére l'id description du document HTML
+let colorsArray = document.getElementById('colors'); // on récupére l'id color du document HTML
+
 // fonction pour lier les élements HTML que l'on va créer avec les données de l'api
-function productDisplay(sofa) {
-    const {altTxt, colors, description, imageUrl, name, price, _id} = sofa
-    createImage(imageUrl, altTxt)
-    createTitle(name)
-    createPrice(price)
-    createDescription(description)
-    createColors(colors) 
-}
-//Fonction pour ajouter les balises img pour y mettre des images
-function createImage(imageUrl, altTxt) {
-    const image = document.createElement("img")
-    image.src = imageUrl
-    image.alt = altTxt
-    const parent = document.querySelector(".item__img")
-    if(parent != null) parent.appendChild(image)
-}
+const showProduct = async () => {
+  await fetchProducts();
+  //Ajout des balises img pour stocker les images
+  let image = document.createElement('img');
+  image.setAttribute('src', product.imageUrl);
+  image.setAttribute('alt', product.altTxt);
+  parent.appendChild(image);
 
-//Ajout du nom
-function createTitle(name) {
-    const h1 = document.querySelector("#title")
-    if(h1 != null) h1.textContent = name
-}
+  //Ajout du nom
+  title.innerHTML = product.name;
 
-//Ajout du prix
-function createPrice(price) {
-    const span = document.querySelector("#price")
-    if(span != null) span.textContent = price
+  //Ajout du price
+  price.innerHTML = product.price;
 
-}
+  //Ajout de la description
+  description.innerHTML = product.description;
 
-//Ajout de la description
-function createDescription(description) {
-    const p = document.querySelector("#description")
-    if(p != null) p.textContent = description
-}
+  // Ajout des couleurs du tableau colors avec une boucle
+  for (let i = 0; i < product.colors.length; i++) {
+    let color = document.createElement('option');
+    color.setAttribute('value', product.colors[i]);
+    color.innerHTML = product.colors[i];
+    colorsArray.appendChild(color);
+  }
+  fetchProducts(); // Déclaration de la fonction et récupération des parametres
+};
+showProduct();
 
-//Ajout des couleurs du tableau colors avec une boucle forEach
-function createColors(colors) {
-    const select = document.querySelector("#colors")
-    if(select != null) {
-        colors.forEach(color => {
-            const option = document.createElement("option")
-            option.value = color
-            option.textContent = color
-            select.appendChild(option)
-                     
-        });
-    }
+//Ajout des articles dans le panier
+// const addProduct = () => {
+//   let button = document.getElementById('addToCart');
+//   let quantity = document.getElementById('quantity');
+//   let id = produitId;
+// };
 
-}
+//Ecoute du boutton "Ajouter au panier"
+const button = document.querySelector('#addToCart');
+button.addEventListener('click', (e) => {
+  e.preventDefault;
+  const color = document.querySelector('#colors').value;
+  const quantity = document.querySelector('#quantity').value;
+  if (color == null || color === '' || quantity == null || quantity == 0) {
+    alert('Svp, veuillez selectionner une couleur et une quantité');
+    return;
+  }
 
+  //Fabrication du tableau pour l'envoyer dans le locolstorage
+  const containerProduct = {
+    id: produitId,
+    colors: color,
+    quantity: quantity,
+  };
 
-
-
-
-
-
-
-
+  // ********************localStorage*******************************
+  localStorage.setItem(produitId, JSON.stringify(containerProduct)); //Transforme l'objet en une chaine de caractère
+  window.location.href = 'cart.html'; //Affichage de la page cart.html
+});
