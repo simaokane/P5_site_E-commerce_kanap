@@ -47,32 +47,56 @@ const showProduct = async () => {
 };
 showProduct();
 
-//Ajout des articles dans le panier
-// const addProduct = () => {
-//   let button = document.getElementById('addToCart');
-//   let quantity = document.getElementById('quantity');
-//   let id = produitId;
-// };
-
-//Ecoute du boutton "Ajouter au panier"
+//Ajout du produit au panier
 const button = document.querySelector('#addToCart');
-button.addEventListener('click', (e) => {
-  e.preventDefault;
-  const color = document.querySelector('#colors').value;
-  const quantity = document.querySelector('#quantity').value;
-  if (color == null || color === '' || quantity == null || quantity == 0) {
-    alert('Svp, veuillez selectionner une couleur et une quantité');
-    return;
-  }
+button.addEventListener('click', buttonClick); //Ecoute du boutton "Ajouter au panier"
 
-  //Fabrication du tableau pour l'envoyer dans le locolstorage
-  const containerProduct = {
+//Ajout des caractérisqtiques dans
+function buttonClick() {
+  //lecture de la couleur et de la quantité depuis le formulaire
+  const color = document.querySelector('#colors').value; //Ajout de la couleur selectionnnée
+  const quantity = document.querySelector('#quantity').value; //Ajout de la quantité selectionnnée
+
+  if (invalidPurchase(color, quantity)) return; //Si un des deux est invalide, le fonction s'arrete
+  putInBasket(color, quantity); //Sinon, va sauvegarder toutes les données qu'on veut
+  goToTheCartPage(); //Et rediriger vers la page panier(cart.html)
+}
+
+//Fabrication d'un objet pour l'envoyer dans le locolstorage
+function putInBasket(color, quantity) {
+  const sendProduct = {
     id: produitId,
     colors: color,
     quantity: quantity,
   };
+  localStorage.setItem(produitId, JSON.stringify(sendProduct)); //Transforme l'objet en une chaine de caractère
+}
 
-  // ********************localStorage*******************************
-  localStorage.setItem(produitId, JSON.stringify(containerProduct)); //Transforme l'objet en une chaine de caractère
-  window.location.href = 'cart.html'; //Affichage de la page cart.html
-});
+//Si le panier est vide
+function invalidPurchase(color, quantity) {
+  if (color == null || color === '' || quantity == null || quantity == 0) {
+    alert('Svp, veuillez selectionner une couleur et une quantité');
+    return true;
+  }
+}
+
+//Affichage de la page cart.html
+function goToTheCartPage() {
+  window.location.href = 'cart.html';
+}
+
+// Recupération des données du lS et les mettre dans la variable cart[]
+
+const cart = [];
+recuObjetStorage();
+
+function recuObjetStorage() {
+  const numberOfObject = localStorage.length;
+  for (let i = 0; i < numberOfObject; i++) {
+    const object = localStorage.getItem(localStorage.key(i));
+    const itemObject = JSON.parse(object);
+    cart.push(itemObject);
+  }
+}
+
+console.log(cart);
