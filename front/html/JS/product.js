@@ -2,10 +2,10 @@
 const produitId = new URL(document.location).searchParams.get('id');
 
 // fonction pour récuperer les données de l'api avec l'id du produit
-let product;
+let selectProduct;
 const fetchProducts = async () => {
   await fetch(`http://localhost:3000/api/products/${produitId}`)
-    .then((res) => res.json().then((json) => (product = json)))
+    .then((res) => res.json().then((json) => (selectProduct = json)))
 
     .catch((error) => console.error(error));
 };
@@ -17,86 +17,100 @@ let title = document.getElementById('title'); // on récupéré l'id title du do
 let price = document.getElementById('price'); // on récupére l'id price du document HTML
 let description = document.getElementById('description'); // on récupére l'id description du document HTML
 let colorsArray = document.getElementById('colors'); // on récupére l'id color du document HTML
+let quantity = document.getElementById('quantity');
 
 // fonction pour lier les élements HTML que l'on va créer avec les données de l'api
 const showProduct = async () => {
   await fetchProducts();
   //Ajout des balises img pour stocker les images
   let image = document.createElement('img');
-  image.setAttribute('src', product.imageUrl);
-  image.setAttribute('alt', product.altTxt);
+  image.setAttribute('src', selectProduct.imageUrl);
+  image.setAttribute('alt', selectProduct.altTxt);
   parent.appendChild(image);
 
   //Ajout du nom
-  title.innerHTML = product.name;
+  title.innerHTML = selectProduct.name;
 
   //Ajout du price
-  price.innerHTML = product.price;
+  price.innerHTML = selectProduct.price;
 
   //Ajout de la description
-  description.innerHTML = product.description;
+  description.innerHTML = selectProduct.description;
 
   // Ajout des couleurs du tableau colors avec une boucle
-  for (let i = 0; i < product.colors.length; i++) {
+  for (let i = 0; i < selectProduct.colors.length; i++) {
     let color = document.createElement('option');
-    color.setAttribute('value', product.colors[i]);
-    color.innerHTML = product.colors[i];
+    color.setAttribute('value', selectProduct.colors[i]);
+    color.innerHTML = selectProduct.colors[i];
     colorsArray.appendChild(color);
   }
   fetchProducts(); // Déclaration de la fonction et récupération des parametres
 };
 showProduct();
 
-//Ajout du produit au panier
-const button = document.querySelector('#addToCart');
-button.addEventListener('click', buttonClick); //Ecoute du boutton "Ajouter au panier"
+clickBtn();
 
-//Ajout des caractérisqtiques dans
-function buttonClick() {
-  //lecture de la couleur et de la quantité depuis le formulaire
-  const color = document.querySelector('#colors').value; //Ajout de la couleur selectionnnée
-  const quantity = document.querySelector('#quantity').value; //Ajout de la quantité selectionnnée
+//Fonction de gestion de l'ajout au panier au click du bouton
+function clickBtn() {
+  let btnAddTocart = document.getElementById('addToCart');
 
-  if (invalidPurchase(color, quantity)) return; //Si un des deux est invalide, le fonction s'arrete
-  putInBasket(color, quantity); //Sinon, va sauvegarder toutes les données qu'on veut
-  goToTheCartPage(); //Et rediriger vers la page panier(cart.html)
+  //Ecoute du bouton 'Ajouter au panier'
+  btnAddTocart.addEventListener('click', (e) => {
+    e.preventDefault;
+    if (
+      colorsArray.value === '' ||
+      quantity.value == null ||
+      quantity.value <= 0
+    ) {
+      alert('Veuillez choisir une couleur et une quantité');
+    } else if (quantity.value > 0 && quantity.value <= 100) {
+      //Creation d'un objet à envoyer dans le localstorage
+      const panier = {
+        id: produitId,
+        color: colorsArray.value,
+        quantity: quantity.value,
+      };
+      addPanier(panier);
+    }
+  });
 }
 
-//Fabrication d'un objet pour l'envoyer dans le locolstorage
-function putInBasket(color, quantity) {
-  const sendProduct = {
-    id: produitId,
-    colors: color,
-    quantity: quantity,
-  };
-  localStorage.setItem(produitId, JSON.stringify(sendProduct)); //Transforme l'objet en une chaine de caractère
+//Fonction de sauvegarde dans le localstorage
+function savePanier(panier) {
+  localStorage.setItem('panier', JSON.stringify(panier));
+  alert('Le produit a bien été enregistré');
 }
 
-//Si le panier est vide
-function invalidPurchase(color, quantity) {
-  if (color == null || color === '' || quantity == null || quantity == 0) {
-    alert('Svp, veuillez selectionner une couleur et une quantité');
-    return true;
+//Recuperation du panier
+function getPanier() {
+  let panier = localStorage.getItem('panier');
+  if (panier == null) {
+    return [];
+  } else {
+    return JSON.parse(panier);
   }
 }
 
-//Affichage de la page cart.html
-function goToTheCartPage() {
+//Fonction d'ajout au panier
+function addPanier(product) {
+  let panier = getPanier();
+  let foundProduct = panier.find(function (p) {
+    //find() est une fonction qui travaille dans les tableaux, et qui permet de chercher un élement sur un tableau par rapport à une condition(s'il trouve l'élément, il le retourne, sinon => undifined)
+    return p.id == product.id && p.color == product.color;
+  });
+  if (foundProduct != undefined) {
+    let newQuantity = Number(
+      parseInt(foundProduct.quantity) + parseInt(product.quantity)
+    ); //parseInt convertit le premier argument en une chaine et renvoie un nombre entier
+    foundProduct.quantity = newQuantity;
+    if (newQuantity >= 100) {
+      alert('Vous ne pouvez pas prendre plus de 100 articles');
+    } else {
+      savePanier(panier);
+    }
+  } else {
+    panier.push(product);
+    savePanier(panier);
+  }
   window.location.href = 'cart.html';
 }
-
-// Recupération des données du lS et les mettre dans la variable cart[]
-
-const cart = [];
-recuObjetStorage();
-
-function recuObjetStorage() {
-  const numberOfObject = localStorage.length;
-  for (let i = 0; i < numberOfObject; i++) {
-    const object = localStorage.getItem(localStorage.key(i));
-    const itemObject = JSON.parse(object);
-    cart.push(itemObject);
-  }
-}
-
-console.log(cart);
