@@ -175,123 +175,123 @@ if (panier != null && panier.length != 0) {
   totalPrice.textContent = '0';
 }
 
-// /** du panier au passage à la commande */
-// // on declare nos varibles
-// const firstName = document.querySelector('#firstName');
-// const lastName = document.querySelector('#lastName');
-// const address = document.querySelector('#address');
-// const city = document.querySelector('#city');
-// const email = document.querySelector('#email');
+/** du panier au passage à la commande */
+// on declare nos varibles
+const firstName = document.querySelector('#firstName');
+const lastName = document.querySelector('#lastName');
+const address = document.querySelector('#address');
+const city = document.querySelector('#city');
+const email = document.querySelector('#email');
 
-// let clientForm = [firstName, lastName, address, city, email];
+let clientForm = [firstName, lastName, address, city, email];
 
-// const firstNameErrorMsg = document.querySelector('#firstNameErrorMsg');
-// const lastNameErrorMsg = document.querySelector('#lastNameErrorMsg');
-// const addressErrorMsg = document.querySelector('#addressErrorMsg');
-// const cityErrorMsg = document.querySelector('#cityErrorMsg');
-// const emailErrorMsg = document.querySelector('#emailErrorMsg');
+const firstNameErrorMsg = document.querySelector('#firstNameErrorMsg');
+const lastNameErrorMsg = document.querySelector('#lastNameErrorMsg');
+const addressErrorMsg = document.querySelector('#addressErrorMsg');
+const cityErrorMsg = document.querySelector('#cityErrorMsg');
+const emailErrorMsg = document.querySelector('#emailErrorMsg');
 
-// let errorMsg = [
-//   firstNameErrorMsg,
-//   lastNameErrorMsg,
-//   addressErrorMsg,
-//   cityErrorMsg,
-//   emailErrorMsg,
-// ];
+let errorMsg = [
+  firstNameErrorMsg,
+  lastNameErrorMsg,
+  addressErrorMsg,
+  cityErrorMsg,
+  emailErrorMsg,
+];
 
-// let textRegExp = new RegExp("^[A-Za-zÀ-ÿ '-]+[^0-9_!¿/+=@#$%&(){}|~<>;:]$");
-// let addressRegExp = new RegExp("^[0-9a-zA-ZÀ-ÿ',-. ]+$");
-// let emailRegExp = new RegExp('[A-Za-z0-9]+@[A-Za-z.-]+[.]+[A-Za-z]{2,3}$');
+let textRegExp = new RegExp("^[A-Za-zÀ-ÿ '-]+[^0-9_!¿/+=@#$%&(){}|~<>;:]$");
+let addressRegExp = new RegExp("^[0-9a-zA-ZÀ-ÿ',-. ]+$");
+let emailRegExp = new RegExp('[A-Za-z0-9]+@[A-Za-z.-]+[.]+[A-Za-z]{2,3}$');
 
-// function verificationInput() {
-//   let arrayTests = [
-//     textRegExp.test(firstName.value),
-//     textRegExp.test(lastName.value),
-//     addressRegExp.test(address.value),
-//     textRegExp.test(city.value),
-//     emailRegExp.test(email.value),
-//   ];
+function verificationInput() {
+  let arrayTests = [
+    textRegExp.test(firstName.value),
+    textRegExp.test(lastName.value),
+    addressRegExp.test(address.value),
+    textRegExp.test(city.value),
+    emailRegExp.test(email.value),
+  ];
 
-//   /* Signaler les champs valides ou erronées */
+  /* Signaler les champs valides ou erronées */
 
-//   for (let i = 0; i < arrayTests.length; i++) {
-//     let validInput = 'solid green';
-//     let invalidInput = 'solid red';
+  for (let i = 0; i < arrayTests.length; i++) {
+    let validInput = 'solid green';
+    let invalidInput = 'solid red';
 
-//     if (arrayTests[i] == true) {
-//       clientForm[i].style.border = validInput;
-//       errorMsg[i].textContent = '';
-//     } else {
-//       clientForm[i].style.border = invalidInput;
-//       errorMsg[i].textContent = 'Erreur de saisie';
-//     }
-//   }
-// }
+    if (arrayTests[i] == true) {
+      clientForm[i].style.border = validInput;
+      errorMsg[i].textContent = '';
+    } else {
+      clientForm[i].style.border = invalidInput;
+      errorMsg[i].textContent = 'Erreur de saisie';
+    }
+  }
+}
 
-// /* Vérifier si le formulaire est correctement rempli */
+/* Vérifier si le formulaire est correctement rempli */
 
-// function validatationForm() {
-//   if (
-//     textRegExp.test(firstName.value) == true &&
-//     textRegExp.test(lastName.value) == true &&
-//     addressRegExp.test(address.value) == true &&
-//     textRegExp.test(city.value) == true &&
-//     emailRegExp.test(email.value) == true
-//   ) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
+function validatationForm() {
+  if (
+    textRegExp.test(firstName.value) == true &&
+    textRegExp.test(lastName.value) == true &&
+    addressRegExp.test(address.value) == true &&
+    textRegExp.test(city.value) == true &&
+    emailRegExp.test(email.value) == true
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
-// /* action commander*/
+/* action commander*/
 
-// function saisiClient() {
-//   const orderClick = document.querySelector('#order');
-//   orderClick.addEventListener('click', sendOrder);
+function saisiClient() {
+  const orderClick = document.querySelector('#order');
+  orderClick.addEventListener('click', sendOrder);
 
-//   function sendOrder(submit) {
-//     submit.preventDefault();
+  function sendOrder(submit) {
+    submit.preventDefault();
 
-//     if (cart.length == 0) {
-//       alert("Vous n'avez aucun article dans le panier");
-//     } else {
-//       verificationInput();
-//       validatationForm();
+    if (panier.length == 0) {
+      alert("Vous n'avez aucun article dans le panier");
+    } else {
+      verificationInput();
+      validatationForm();
 
-//       /* Valider la commande */
+      /* Valider la commande */
 
-//       if (validatationForm() == true) {
-//         const contact = {
-//           firstName: firstName.value,
-//           lastName: lastName.value,
-//           address: address.value,
-//           city: city.value,
-//           email: email.value,
-//         };
+      if (validatationForm() == true) {
+        const contact = {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          address: address.value,
+          city: city.value,
+          email: email.value,
+        };
 
-//         const data = {
-//           products: arrayProduitId,
-//           contact: contact,
-//         };
+        const data = {
+          products: arrayProduitId,
+          contact: contact,
+        };
 
-//         const orderPost = fetch('http://localhost:3000/api/products/order', {
-//           method: 'POST',
-//           headers: {
-//             Accept: 'application/json',
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(data),
-//         });
+        const orderPost = fetch('http://localhost:3000/api/products/order', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
 
-//         orderPost.then(async function (res) {
-//           const order = await res.json();
-//           window.location.href = `../html/confirmation.html?id=${order.orderId}`;
-//         });
-//       } else {
-//         alert('Veuillez vérifier le formulaire');
-//       }
-//     }
-//   }
-// }
-// saisiClient();
+        orderPost.then(async function (res) {
+          const order = await res.json();
+          window.location.href = `../html/confirmation.html?id=${order.orderId}`;
+        });
+      } else {
+        alert('Veuillez vérifier le formulaire');
+      }
+    }
+  }
+}
+saisiClient();
